@@ -46,6 +46,10 @@ class PodcastEpisode extends Model {
     this.extraData
     /** @type {string} */
     this.podcastId
+    /** @type {string} */
+    this.videoURL
+    /** @type {string} */
+    this.videoType
     /** @type {Date} */
     this.createdAt
     /** @type {Date} */
@@ -117,7 +121,9 @@ class PodcastEpisode extends Model {
 
         audioFile: DataTypes.JSON,
         chapters: DataTypes.JSON,
-        extraData: DataTypes.JSON
+        extraData: DataTypes.JSON,
+        videoURL: DataTypes.STRING,
+        videoType: DataTypes.STRING
       },
       {
         sequelize,
@@ -223,7 +229,9 @@ class PodcastEpisode extends Model {
       audioFile: structuredClone(this.audioFile),
       publishedAt: this.publishedAt?.valueOf() || null,
       addedAt: this.createdAt.valueOf(),
-      updatedAt: this.updatedAt.valueOf()
+      updatedAt: this.updatedAt.valueOf(),
+      videoURL: this.videoURL || null,
+      videoType: this.videoType || null
     }
   }
 

@@ -14,13 +14,15 @@
 
 # About
 
-Audiobookshelf is a self-hosted audiobook and podcast server.
+Podcastarr is a self-hosted audiobook and podcast server, forked from Audiobookshelf, with added support for video podcasts.
 
 ### Features
 
 - Fully **open-source**, including the [android & iOS app](https://github.com/advplyr/audiobookshelf-app) _(in beta)_
 - Stream all audio formats on the fly
+- **Video podcast support** with seamless audio/video toggle
 - Search and add podcasts to download episodes w/ auto-download
+- **Add video URLs** to podcast episodes (YouTube, Vimeo, direct links)
 - Multi-user support w/ custom permissions
 - Keeps progress per user and syncs across devices
 - Auto-detects library updates, no need to re-scan
@@ -36,6 +38,17 @@ Audiobookshelf is a self-hosted audiobook and podcast server.
   - Epub, pdf, cbr, cbz
   - Send ebook to device (i.e. Kindle)
 - Open RSS feeds for podcasts and audiobooks
+
+### Video Podcast Feature
+
+Podcastarr extends Audiobookshelf with video podcast capabilities:
+
+- Toggle between audio and video playback on the same episode
+- Support for YouTube, Vimeo, and direct video URLs
+- Visual indicators for episodes with video content
+- Easy video linking through the episode edit interface
+
+See [Video Podcast Documentation](docs/video-podcast-support.md) for details.
 
 Is there a feature you are looking for? [Suggest it](https://github.com/advplyr/audiobookshelf/issues/new/choose)
 
