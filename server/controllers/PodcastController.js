@@ -519,6 +519,46 @@ class PodcastController {
   }
 
   /**
+   * PATCH: /api/podcasts/:id/episode/:episodeId/video
+   * Update video information for a podcast episode
+   *
+   * @this import('../routers/ApiRouter')
+   *
+   * @param {RequestWithLibraryItem} req
+   * @param {Response} res
+   */
+  async updateEpisodeVideo(req, res) {
+    if (!req.user.canUpdate) {
+      Logger.error(`[PodcastController] User "${req.user.username}" attempted to update episode video without permission`)
+      return res.sendStatus(403)
+    }
+
+    const episode = req.libraryItem.media.podcastEpisodes.find((ep) => ep.id === req.params.episodeId)
+    if (!episode) {
+      Logger.error(`[PodcastController] Episode ${req.params.episodeId} not found`)
+      return res.sendStatus(404)
+    }
+
+    const { videoURL, videoType } = req.body
+
+    // Validate videoType if provided
+    const validVideoTypes = ['youtube', 'vimeo', 'direct', null]
+    if (videoType && !validVideoTypes.includes(videoType)) {
+      return res.status(400).send('Invalid videoType. Must be one of: youtube, vimeo, direct')
+    }
+
+    // Update episode
+    episode.videoURL = videoURL || null
+    episode.videoType = videoType || null
+    await episode.save()
+
+    Logger.info(`[PodcastController] Updated episode ${episode.id} video info: ${videoURL ? 'set' : 'cleared'}`)
+
+    SocketAuthority.libraryItemEmitter('item_updated', req.libraryItem)
+    res.json(episode.toOldJSONExpanded(req.libraryItem.id))
+  }
+
+  /**
    *
    * @param {RequestWithUser} req
    * @param {Response} res
