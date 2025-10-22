@@ -5,6 +5,7 @@
         <div dir="auto" class="flex items-center">
           <span class="text-sm font-semibold">{{ episodeTitle }}</span>
           <widgets-podcast-type-indicator :type="episodeType" />
+          <span v-if="hasVideo" class="ml-2 material-symbols text-blue-400" :title="$strings.LabelVideoAvailable || 'Video Available'">videocam</span>
         </div>
 
         <div class="h-10 flex items-center mt-1.5 mb-0.5 overflow-hidden">
@@ -146,6 +147,9 @@ export default {
       const duration = this.itemProgress.duration || this.episode?.duration || 0
       const remaining = Math.floor(duration - this.itemProgress.currentTime)
       return this.$getString('LabelTimeLeft', [this.$elapsedPretty(remaining)])
+    },
+    hasVideo() {
+      return !!(this.episode?.videoURL)
     }
   },
   methods: {

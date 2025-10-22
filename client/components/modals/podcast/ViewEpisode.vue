@@ -16,6 +16,31 @@
         </div>
       </div>
       <p dir="auto" class="text-lg font-semibold mb-6">{{ title }}</p>
+
+      <!-- Audio/Video Toggle -->
+      <div v-if="hasVideo" class="mb-4 flex items-center justify-center">
+        <button @click="showingVideo = false" class="px-4 py-2 rounded-l-lg transition-colors" :class="!showingVideo ? 'bg-primary text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'">
+          <span class="material-symbols mr-2">headphones</span>
+          {{ $strings.LabelAudio || 'Audio' }}
+        </button>
+        <button @click="showingVideo = true" class="px-4 py-2 rounded-r-lg transition-colors" :class="showingVideo ? 'bg-primary text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'">
+          <span class="material-symbols mr-2">videocam</span>
+          {{ $strings.LabelVideo || 'Video' }}
+        </button>
+      </div>
+
+      <!-- Video Player -->
+      <div v-if="showingVideo && videoURL" class="mb-4">
+        <div class="aspect-w-16 aspect-h-9 bg-black rounded-lg overflow-hidden">
+          <iframe v-if="videoType === 'youtube'" :src="youtubeEmbedUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+          <iframe v-else-if="videoType === 'vimeo'" :src="vimeoEmbedUrl" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+          <video v-else-if="videoType === 'direct'" :src="videoURL" controls class="w-full h-full"></video>
+          <div v-else class="flex items-center justify-center text-gray-400">
+            <p>{{ $strings.MessageUnsupportedVideoType || 'Unsupported video type' }}</p>
+          </div>
+        </div>
+      </div>
+
       <div v-if="description" dir="auto" class="default-style less-spacing" @click="handleDescriptionClick" v-html="description" />
       <p v-else class="mb-2">{{ $strings.MessageNoDescription }}</p>
 
@@ -49,7 +74,8 @@
 export default {
   data() {
     return {
-      processing: false
+      processing: false,
+      showingVideo: false
     }
   },
   computed: {
@@ -102,9 +128,45 @@ export default {
     },
     bookCoverAspectRatio() {
       return this.$store.getters['libraries/getBookCoverAspectRatio']
+    },
+    videoURL() {
+      return this.episode.videoURL || null
+    },
+    videoType() {
+      return this.episode.videoType || null
+    },
+    hasVideo() {
+      return !!this.videoURL
+    },
+    youtubeEmbedUrl() {
+      if (!this.videoURL || this.videoType !== 'youtube') return ''
+      // Extract video ID from various YouTube URL formats
+      const videoId = this.extractYoutubeId(this.videoURL)
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : ''
+    },
+    vimeoEmbedUrl() {
+      if (!this.videoURL || this.videoType !== 'vimeo') return ''
+      // Extract video ID from Vimeo URL
+      const videoId = this.videoURL.match(/vimeo\.com\/(\d+)/)?.[1]
+      return videoId ? `https://player.vimeo.com/video/${videoId}` : ''
     }
   },
   methods: {
+    extractYoutubeId(url) {
+      // Handle various YouTube URL formats
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
+        /youtube\.com\/watch\?.*v=([^&\?\/]+)/
+      ]
+      
+      for (const pattern of patterns) {
+        const match = url.match(pattern)
+        if (match && match[1]) {
+          return match[1]
+        }
+      }
+      return null
+    },
     handleDescriptionClick(e) {
       if (e.target.matches('span.time-marker')) {
         const time = parseInt(e.target.dataset.time)

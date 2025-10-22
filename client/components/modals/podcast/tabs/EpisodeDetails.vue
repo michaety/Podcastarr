@@ -23,6 +23,20 @@
         <ui-rich-text-editor :label="$strings.LabelDescription" v-model="newEpisode.description" />
       </div>
     </div>
+
+    <!-- Video Section -->
+    <div class="pt-4 pb-2">
+      <p class="text-sm font-semibold text-gray-200 mb-2">{{ $strings.LabelVideoSettings || 'Video Settings' }}</p>
+      <div class="flex flex-wrap">
+        <div class="w-3/4 p-1">
+          <ui-text-input-with-label v-model="newEpisode.videoURL" :label="$strings.LabelVideoURL || 'Video URL'" :placeholder="$strings.PlaceholderVideoURL || 'e.g., https://youtube.com/watch?v=...'" trim-whitespace />
+        </div>
+        <div class="w-1/4 p-1">
+          <ui-dropdown v-model="newEpisode.videoType" :label="$strings.LabelVideoType || 'Video Type'" :items="videoTypes" small />
+        </div>
+      </div>
+    </div>
+
     <div class="flex items-center justify-end pt-4">
       <!-- desktop -->
       <ui-btn @click="submit" class="mx-2 hidden md:block">{{ $strings.ButtonSave }}</ui-btn>
@@ -65,7 +79,9 @@ export default {
         subtitle: null,
         description: null,
         pubDate: null,
-        publishedAt: null
+        publishedAt: null,
+        videoURL: null,
+        videoType: null
       },
       pubDateInput: null
     }
@@ -103,6 +119,14 @@ export default {
           value: e.value
         }
       })
+    },
+    videoTypes() {
+      return [
+        { text: this.$strings.LabelNone || 'None', value: null },
+        { text: 'YouTube', value: 'youtube' },
+        { text: 'Vimeo', value: 'vimeo' },
+        { text: this.$strings.LabelDirect || 'Direct', value: 'direct' }
+      ]
     }
   },
   methods: {
@@ -124,6 +148,8 @@ export default {
       this.newEpisode.description = this.episode.description || ''
       this.newEpisode.pubDate = this.episode.pubDate || ''
       this.newEpisode.publishedAt = this.episode.publishedAt
+      this.newEpisode.videoURL = this.episode.videoURL || ''
+      this.newEpisode.videoType = this.episode.videoType || null
 
       this.pubDateInput = this.episode.pubDate ? this.$formatJsDate(new Date(this.episode.pubDate), "yyyy-MM-dd'T'HH:mm") : null
     },
